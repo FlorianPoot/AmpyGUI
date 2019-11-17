@@ -22,7 +22,12 @@ class MkDir(Toplevel):
 
         self.resizable(False, False)
         self.title("MkDir...")
-        self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+
+        if sys.platform == "win32":
+            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+        elif sys.platform == "linux":
+            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         self.name = StringVar()
         ttk.Entry(self, textvariable=self.name, font="Arial 12", width=25).pack(expand=YES, fill=BOTH, side="left", padx=5, pady=10)

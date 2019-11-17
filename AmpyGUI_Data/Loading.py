@@ -22,7 +22,12 @@ class Loading(Toplevel):
 
         self.resizable(False, False)
         self.title(title)
-        self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+
+        if sys.platform == "win32":
+            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+        elif sys.platform == "linux":
+            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         frame = Frame(self)
         self.loading = AnimatedGif(frame)

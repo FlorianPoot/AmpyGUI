@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter import messagebox
 
 import serial
+import sys
+import glob
 
 
 class SelectPort(Toplevel):
@@ -24,7 +26,12 @@ class SelectPort(Toplevel):
 
         self.resizable(False, False)
         self.title("Board")
-        self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+
+        if sys.platform == "win32":
+            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+        elif sys.platform == "linux":
+            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         # region Port
         port = Frame(self, bd=1, relief=GROOVE)
@@ -71,7 +78,12 @@ class SelectPort(Toplevel):
 
         """Lists available serial port names."""
 
-        ports = ["COM%s" % (i + 1) for i in range(256)]
+        if sys.platform == "win32":
+            ports = ["COM%s" % (i + 1) for i in range(256)]
+        elif sys.platform == "linux":
+            ports = glob.glob("/dev/tty[A-Za-z]*")
+        else:
+            raise EnvironmentError("Unsupported platform")
 
         result = list()
         for port in ports:

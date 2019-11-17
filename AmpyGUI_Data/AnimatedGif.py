@@ -28,7 +28,7 @@ class AnimatedGif(Label):
 
         try:
             self.delay = image.info["duration"]
-        except:
+        except KeyError:
             self.delay = 100
 
         if len(self.frames) == 1:

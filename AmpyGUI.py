@@ -28,7 +28,12 @@ class AmpyGUI(Tk):
         self.title("AmpyGUI - Version 1.0.0")
         self.geometry("650x250")
         self.minsize(650, 250)
-        self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+
+        if sys.platform == "win32":
+            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+        elif sys.platform == "linux":
+            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         self.tree_view = ttk.Treeview(self, selectmode=BROWSE)
 
@@ -308,7 +313,11 @@ class AmpyGUI(Tk):
 
         """Close board and destroy window."""
 
-        self.board.close()
+        try:
+            self.board.close()
+        except AttributeError:
+            pass
+
         self.destroy()
 
     @staticmethod
