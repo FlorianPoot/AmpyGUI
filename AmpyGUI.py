@@ -24,7 +24,8 @@ class AmpyGUI(Tk):
         
         super(AmpyGUI, self).__init__()
 
-        self.title("AmpyGUI - Version 1.0.0 Beta")
+        # region GUI.
+        self.title("AmpyGUI - Version 1.0.0")
         self.geometry("650x250")
         self.minsize(650, 250)
         self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
@@ -84,12 +85,15 @@ class AmpyGUI(Tk):
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
+        # endregion
 
+        # region Attributes.
         self.port = None
         self.board = None
         self.files = None
 
         self.real_paths = dict()  # ID: Path
+        # endregion
 
         self.update()
         # Start port popup

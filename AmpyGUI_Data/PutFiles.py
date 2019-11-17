@@ -18,8 +18,13 @@ class PutFiles(Toplevel):
         self.parent = parent
         self.transient(self.parent)
 
-        self.geometry("200x100" + "+" + str(int(self.parent.geometry().split("+")[1]) + 225)
-                      + "+" + str(int(self.parent.geometry().split("+")[2]) + 65))
+        width = 200
+        height = 100
+
+        pos_x = self.parent.winfo_x() + (self.parent.winfo_width() // 2) - (width // 2)
+        pos_y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (height // 2) - 10
+
+        self.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
 
         self.resizable(False, False)
         self.title("Put...")
