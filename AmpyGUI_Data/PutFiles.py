@@ -50,8 +50,12 @@ class PutFiles(Toplevel):
 
                     relative_path = root.replace(folder, "").replace("\\", "/")
 
+                    # Directories with '.' are ignored.
+                    if "." in relative_path:
+                        continue
+
                     if relative_path != "" and path[:-1] + relative_path not in directories:
-                        self.parent.files.mkdir(path[:-1] + relative_path)
+                        self.parent.files.mkdir(path[:-1] + relative_path, exists_okay=True)
                         directories.append(path[:-1] + relative_path)
 
                     for file in files:
