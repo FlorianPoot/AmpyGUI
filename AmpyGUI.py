@@ -138,7 +138,7 @@ class AmpyGUI(Tk):
 
     def get_path(self):
 
-        name = self.tree_view.item(self.tree_view.focus())
+        name = self.tree_view.item(self.tree_view.focus())["text"]
         item = self.tree_view.focus()
 
         # Folders are determined by the lack of extension.
@@ -151,7 +151,7 @@ class AmpyGUI(Tk):
 
         """Listdir board and insert result into tree view"""
 
-        directories = {"/": ""}
+        directories = {"": ""}
         files = self.files.ls(recursive=True)
 
         for file in files:
@@ -159,10 +159,10 @@ class AmpyGUI(Tk):
             directory = name.split("/")[:-1]
 
             for index in range(1, len(directory)):
-                if "/".join(directory[:index + 1]) not in directories:
-                    _id = self.tree_view.insert(directories["/" + directory[index - 1]], "end", text=directory[index])
+                if "/".join(directory[:index + 1])[1:] not in directories:
+                    _id = self.tree_view.insert(directories["/".join(directory[:index])[1:]], "end", text=directory[index])
                     self.real_paths[_id] = "/".join(directory[:index + 1])
-                    directories["/".join(directory[:index + 1])] = _id
+                    directories["/".join(directory[:index + 1])[1:]] = _id
 
         for file in files:
             name, size = file.split(" - ")
@@ -171,9 +171,9 @@ class AmpyGUI(Tk):
 
             # Folders are determined by the lack of extension.
             if "." in name:
-                _id = self.tree_view.insert(directories["/" + directory], "end", text=name.split("/")[-1], values=(name.split("/")[-1].split(".")[1].upper(), size))
+                _id = self.tree_view.insert(directories[directory], "end", text=name.split("/")[-1], values=(name.split("/")[-1].split(".")[1].upper(), size))
             else:
-                _id = self.tree_view.insert(directories["/" + directory], "end", text=name.split("/")[-1])
+                _id = self.tree_view.insert(directories[directory], "end", text=name.split("/")[-1])
 
             self.real_paths[_id] = name
 
