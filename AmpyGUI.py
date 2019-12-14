@@ -11,6 +11,7 @@ from AmpyGUI_Data.Loading import Loading
 from AmpyGUI_Data.MkDir import MkDir
 
 import threading
+import webbrowser
 import textwrap
 import ast
 
@@ -25,7 +26,7 @@ class AmpyGUI(Tk):
         super(AmpyGUI, self).__init__()
 
         # region GUI.
-        self.title("AmpyGUI - Version 1.0.0")
+        self.title("AmpyGUI - Version 1.1.0 Alpha")
         self.geometry("650x250")
         self.minsize(650, 250)
 
@@ -34,6 +35,22 @@ class AmpyGUI(Tk):
         elif sys.platform == "linux":
             self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
             self.tk.call("wm", "iconphoto", self._w, self.icon)
+
+        menu_bar = Menu(self)
+
+        self.board_bar = Menu(menu_bar, tearoff=0)
+        self.board_bar.add_command(label="Put MPY", command=None)
+        self.board_bar.add_command(label="Disconnect", command=self.disconnect)
+        self.board_bar.add_separator()
+        self.board_bar.add_command(label="Close", command=self.quit)
+
+        help_bar = Menu(menu_bar, tearoff=0)
+        help_bar.add_command(label="GitHub page", command=lambda: webbrowser.open("https://github.com/FlorianPoot/AmpyGUI"))
+        help_bar.add_command(label="About", command=None)
+
+        menu_bar.add_cascade(label="Board", menu=self.board_bar)
+        menu_bar.add_cascade(label="Help", menu=help_bar)
+        self.config(menu=menu_bar)
 
         self.tree_view = ttk.Treeview(self, selectmode=BROWSE)
 
@@ -69,24 +86,24 @@ class AmpyGUI(Tk):
 
         memory.grid(column=0, row=2, columnspan=2, pady=5)
 
-        buttons = Frame(self)
+        self.buttons = Frame(self)
 
-        self.get_button = ttk.Button(buttons, text="Get", takefocus=False, command=self.get, state=DISABLED)
+        self.get_button = ttk.Button(self.buttons, text="Get", takefocus=False, command=self.get, state=DISABLED)
         self.get_button.grid(column=0, row=0, sticky=E+W, padx=5)
 
-        ttk.Button(buttons, text="Put", takefocus=False, command=self.put).grid(column=1, row=0, sticky=E+W, padx=5)
-        ttk.Button(buttons, text="MkDir", takefocus=False, command=self.mk_dir).grid(column=2, row=0, sticky=E+W, padx=5)
-        ttk.Button(buttons, text="Reset", takefocus=False, command=self.reset).grid(column=3, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Put", takefocus=False, command=self.put).grid(column=1, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="MkDir", takefocus=False, command=self.mk_dir).grid(column=2, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Reset", takefocus=False, command=self.reset).grid(column=3, row=0, sticky=E+W, padx=5)
 
-        self.remove_button = ttk.Button(buttons, text="Remove", takefocus=False, command=self.remove, state=DISABLED)
+        self.remove_button = ttk.Button(self.buttons, text="Remove", takefocus=False, command=self.remove, state=DISABLED)
         self.remove_button.grid(column=4, row=0, sticky=E+W, padx=5)
 
-        ttk.Button(buttons, text="Format", takefocus=False, command=self.format).grid(column=5, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Format", takefocus=False, command=self.format).grid(column=5, row=0, sticky=E+W, padx=5)
 
         for i in range(6):
-            buttons.columnconfigure(i, weight=1)
+            self.buttons.columnconfigure(i, weight=1)
 
-        buttons.grid(column=0, row=3, columnspan=2, sticky=N+S+E+W, padx=10, pady=5)
+        self.buttons.grid(column=0, row=3, columnspan=2, sticky=N+S+E+W, padx=10, pady=5)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
@@ -130,13 +147,31 @@ class AmpyGUI(Tk):
 
         """Connect to the selected port and fill window infos"""
 
+        for button in self.buttons.winfo_children():
+            button.config(state=NORMAL)
+
+        self.board_bar.entryconfig(1, label="Disconnect", command=self.disconnect)
+
         self.port = port
         self.board = Pyboard(self.port)
         self.files = Files(self.board)
 
         self.refresh()
 
+    def disconnect(self):
+
+        """Disable buttons and release COM port"""
+
+        for button in self.buttons.winfo_children():
+            button.config(state=DISABLED)
+
+        self.board_bar.entryconfig(1, label="Connect", command=lambda: SelectPort(self))
+
+        self.board.close()
+
     def get_path(self):
+
+        """Get path of selected item."""
 
         name = self.tree_view.item(self.tree_view.focus())["text"]
         item = self.tree_view.focus()
@@ -191,6 +226,8 @@ class AmpyGUI(Tk):
         self.board.close()
 
     def get_space_info(self):
+
+        """Get total space, free space and used space."""
 
         command = """\
                   import uos

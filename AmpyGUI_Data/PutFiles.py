@@ -22,7 +22,7 @@ class PutFiles(Toplevel):
         height = 100
 
         pos_x = self.parent.winfo_x() + (self.parent.winfo_width() // 2) - (width // 2)
-        pos_y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (height // 2) - 10
+        pos_y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (height // 2)
 
         self.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
 

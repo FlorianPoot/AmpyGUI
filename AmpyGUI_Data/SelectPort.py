@@ -20,7 +20,7 @@ class SelectPort(Toplevel):
         height = 100
 
         pos_x = self.parent.winfo_x() + (self.parent.winfo_width() // 2) - (width // 2)
-        pos_y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (height // 2) - 10
+        pos_y = self.parent.winfo_y() + (self.parent.winfo_height() // 2) - (height // 2)
 
         self.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
 
@@ -52,12 +52,20 @@ class SelectPort(Toplevel):
         # endregion
 
         ttk.Button(self, text="Refresh", takefocus=False, command=self.serial_ports).grid(column=0, row=1, sticky=N+S+E+W, padx=10, pady=5)
-        self.connect = ttk.Button(self, text="Connect", takefocus=False, state=DISABLED, command=self.connect)
-        self.connect.grid(column=1, row=1, sticky=N+S+E+W, padx=10, pady=5)
+        self.connect_button = ttk.Button(self, text="Connect", takefocus=False, state=DISABLED, command=self.connect)
+        self.connect_button.grid(column=1, row=1, sticky=N+S+E+W, padx=10, pady=5)
+
+        self.bind("<Return>", lambda e: self.connect())
 
         for i in range(2):
             self.columnconfigure(i, weight=1)
         self.rowconfigure(0, weight=1)
+
+        if self.parent.port is not None:
+            for i, c in enumerate(self.combo_box["values"]):
+                if self.parent.port == c:
+                    self.combo_box.current(i)
+                    self.connect_button.config(state=NORMAL)
 
         self.protocol("WM_DELETE_WINDOW", self.close)
 
@@ -72,7 +80,7 @@ class SelectPort(Toplevel):
         self.focus_set()
 
         if self.combo_box.get() != "":
-            self.connect.config(state=NORMAL)
+            self.connect_button.config(state=NORMAL)
 
     def serial_ports(self):
 
