@@ -21,7 +21,7 @@ class AmpyGUI(Tk):
     def __init__(self):
 
         # Report all exceptions to a MessageBox.
-        Tk.report_callback_exception = self.show_error
+        # Tk.report_callback_exception = self.show_error
         
         super(AmpyGUI, self).__init__()
 
@@ -39,10 +39,10 @@ class AmpyGUI(Tk):
         menu_bar = Menu(self)
 
         self.board_bar = Menu(menu_bar, tearoff=0)
-        self.board_bar.add_command(label="Put MPY", command=None)
-        self.board_bar.add_command(label="Disconnect", command=self.disconnect)
+        self.board_bar.add_command(label="Put MPY", command=None, accelerator="   Ctrl+M")
+        self.board_bar.add_command(label="Disconnect", command=self.disconnect, accelerator="   Ctrl+S")
         self.board_bar.add_separator()
-        self.board_bar.add_command(label="Close", command=self.quit)
+        self.board_bar.add_command(label="Close", command=self.quit, accelerator="   Alt+F4")
 
         help_bar = Menu(menu_bar, tearoff=0)
         help_bar.add_command(label="GitHub page", command=lambda: webbrowser.open("https://github.com/FlorianPoot/AmpyGUI"))
@@ -110,11 +110,22 @@ class AmpyGUI(Tk):
         # endregion
 
         # region Attributes.
+        self.loboris_port = False
+
         self.port = None
         self.board = None
         self.files = None
 
+        self.connected = False
+
         self.real_paths = dict()  # ID: Path
+        # endregion
+
+        # region Shortcuts
+
+        self.bind("<Control-S>", lambda e: self.disconnect())
+        self.bind("<Control-s>", lambda e: self.disconnect())
+
         # endregion
 
         self.update()
@@ -131,7 +142,7 @@ class AmpyGUI(Tk):
 
         item = self.tree_view.item(self.tree_view.focus())["text"]
 
-        if item != "":
+        if self.connected and item != "":
             self.remove_button.config(state=NORMAL)
 
             # Folders are determined by the lack of extension.
@@ -152,9 +163,15 @@ class AmpyGUI(Tk):
 
         self.board_bar.entryconfig(1, label="Disconnect", command=self.disconnect)
 
+        # Shortcuts
+        self.bind("<Control-S>", lambda e: self.disconnect())
+        self.bind("<Control-s>", lambda e: self.disconnect())
+
         self.port = port
         self.board = Pyboard(self.port)
         self.files = Files(self.board)
+
+        self.connected = True
 
         self.refresh()
 
@@ -167,7 +184,13 @@ class AmpyGUI(Tk):
 
         self.board_bar.entryconfig(1, label="Connect", command=lambda: SelectPort(self))
 
+        # Shortcuts
+        self.bind("<Control-S>", lambda e: SelectPort(self))
+        self.bind("<Control-s>", lambda e: SelectPort(self))
+
         self.board.close()
+
+        self.connected = False
 
     def get_path(self):
 
@@ -175,6 +198,12 @@ class AmpyGUI(Tk):
 
         name = self.tree_view.item(self.tree_view.focus())["text"]
         item = self.tree_view.focus()
+
+        if self.loboris_port and (name == "" or "." in name):
+            name = "/flash"
+            for key, values in self.real_paths.items():
+                if name == values:
+                    item = key
 
         # Folders are determined by the lack of extension.
         if item != "" and "." not in name:
@@ -229,10 +258,10 @@ class AmpyGUI(Tk):
 
         """Get total space, free space and used space."""
 
-        command = """\
+        command = """
                   import uos
-                  print(uos.statvfs("/"))
-                  """
+                  print(uos.statvfs("{}"))
+                  """.format("/" if not self.loboris_port else "/flash")
 
         self.board.enter_raw_repl()
         out = self.board.exec_(textwrap.dedent(command)).decode("utf-8")
@@ -241,6 +270,12 @@ class AmpyGUI(Tk):
         out = ast.literal_eval(out)
 
         total = round((out[0] * out[2]) / 1024**2, 2)
+
+        if total == 0:
+            # Loboris port.
+            self.loboris_port = True
+            return self.get_space_info()
+
         self.total_label.config(text=f"Total: {total} MB")
 
         free = round((out[0] * out[3]) / 1024**2, 2)
@@ -327,18 +362,27 @@ class AmpyGUI(Tk):
         """Remove all files except boot.py."""
 
         def format_thread():
-            try:
-                for value in self.real_paths.values():
-                    if value != "/boot.py" and "/" not in value[1:]:
-                        # Folders are determined by the lack of extension.
-                        if "." not in value:
-                            self.files.rmdir(value)
-                        else:
-                            self.files.rm(value)
-                self.refresh()
-                loading.close()
-            except Exception as e:
-                self.show_error(e)
+            if not self.loboris_port:
+                try:
+                    for value in self.real_paths.values():
+                        if value != "/boot.py" and "/" not in value[1:]:
+
+                            # Folders are determined by the lack of extension.
+                            if "." not in value:
+                                self.files.rmdir(value)
+                            else:
+                                self.files.rm(value)
+
+                except Exception as e:
+                    self.show_error(e)
+            else:
+                try:
+                    self.files.rmdir("/flash")
+                except RuntimeError:
+                    pass
+
+            self.refresh()
+            loading.close()
 
         if not messagebox.askyesno("Format", "Are you sure you want to remove all files except boot.py ?"):
             return
