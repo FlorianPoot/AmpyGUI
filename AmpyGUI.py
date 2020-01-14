@@ -21,7 +21,7 @@ class AmpyGUI(Tk):
     def __init__(self):
 
         # Report all exceptions to a MessageBox.
-        # Tk.report_callback_exception = self.show_error
+        Tk.report_callback_exception = self.show_error
         
         super(AmpyGUI, self).__init__()
 
@@ -41,6 +41,7 @@ class AmpyGUI(Tk):
         self.board_bar = Menu(menu_bar, tearoff=0)
         self.board_bar.add_command(label="Put MPY", command=None, accelerator="   Ctrl+M")
         self.board_bar.add_command(label="Disconnect", command=self.disconnect, accelerator="   Ctrl+S")
+        self.board_bar.add_command(label="WebREPL", command=lambda: webbrowser.open("http://micropython.org/webrepl/"))
         self.board_bar.add_separator()
         self.board_bar.add_command(label="Close", command=self.quit, accelerator="   Alt+F4")
 
