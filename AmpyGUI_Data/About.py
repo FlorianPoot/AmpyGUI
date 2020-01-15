@@ -35,7 +35,7 @@ class About(Toplevel):
 
         bind_frame = Frame(label_frame_bind)
 
-        Label(bind_frame, text="Ampy\nMpy_cross\nTkinter\nPython 3.7").pack(fill=BOTH, expand=YES)
+        Label(bind_frame, text="Ampy\nMpy_cross\nTkinter\nPillow\nPython 3.7").pack(fill=BOTH, expand=YES)
 
         bind_frame.pack(fill=BOTH, expand=YES)
         label_frame_bind.pack(fill=BOTH, expand=YES, padx=20, pady=10)
