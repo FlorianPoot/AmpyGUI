@@ -30,7 +30,12 @@ class MkDir(Toplevel):
             self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         self.name = StringVar()
-        ttk.Entry(self, textvariable=self.name, font="Arial 12", width=25).pack(expand=YES, fill=BOTH, side="left", padx=5, pady=10)
+
+        entry = ttk.Entry(self, textvariable=self.name, font="Arial 12", width=25)
+        entry.pack(expand=YES, fill=BOTH, side="left", padx=5, pady=10)
+
+        entry.focus()
+
         ttk.Button(self, text="Ok", takefocus=0, command=self.mk_dir).pack(expand=YES, fill=BOTH, side="right", padx=5, pady=10)
 
         self.focus_set()

@@ -67,8 +67,6 @@ class SelectPort(Toplevel):
                     self.combo_box.current(i)
                     self.connect_button.config(state=NORMAL)
 
-        self.protocol("WM_DELETE_WINDOW", self.close)
-
         self.focus_set()
         self.grab_set()
 
@@ -113,10 +111,3 @@ class SelectPort(Toplevel):
         else:
             self.parent.connect(self.combo_box.get())
             self.destroy()
-
-    def close(self):
-
-        """Close all windows and quit application"""
-
-        self.destroy()
-        self.parent.destroy()

@@ -39,8 +39,8 @@ class AmpyGUI(Tk):
         menu_bar = Menu(self)
 
         self.board_bar = Menu(menu_bar, tearoff=0)
-        self.board_bar.add_command(label="Put MPY", command=None, accelerator="   Ctrl+M")
-        self.board_bar.add_command(label="Disconnect", command=self.disconnect, accelerator="   Ctrl+S")
+        self.board_bar.add_command(label="Put MPY", command=lambda: PutFiles(self, mpy=True), state=DISABLED, accelerator="   Ctrl+M")
+        self.board_bar.add_command(label="Connect", command=lambda: SelectPort(self), accelerator="   Ctrl+S")
         self.board_bar.add_command(label="WebREPL", command=lambda: webbrowser.open("http://micropython.org/webrepl/"))
         self.board_bar.add_separator()
         self.board_bar.add_command(label="Close", command=self.quit, accelerator="   Alt+F4")
@@ -92,14 +92,14 @@ class AmpyGUI(Tk):
         self.get_button = ttk.Button(self.buttons, text="Get", takefocus=False, command=self.get, state=DISABLED)
         self.get_button.grid(column=0, row=0, sticky=E+W, padx=5)
 
-        ttk.Button(self.buttons, text="Put", takefocus=False, command=self.put).grid(column=1, row=0, sticky=E+W, padx=5)
-        ttk.Button(self.buttons, text="MkDir", takefocus=False, command=self.mk_dir).grid(column=2, row=0, sticky=E+W, padx=5)
-        ttk.Button(self.buttons, text="Reset", takefocus=False, command=self.reset).grid(column=3, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Put", takefocus=False, command=lambda: PutFiles(self), state=DISABLED).grid(column=1, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="MkDir", takefocus=False, command=lambda: MkDir(self), state=DISABLED).grid(column=2, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Reset", takefocus=False, command=self.reset, state=DISABLED).grid(column=3, row=0, sticky=E+W, padx=5)
 
         self.remove_button = ttk.Button(self.buttons, text="Remove", takefocus=False, command=self.remove, state=DISABLED)
         self.remove_button.grid(column=4, row=0, sticky=E+W, padx=5)
 
-        ttk.Button(self.buttons, text="Format", takefocus=False, command=self.format).grid(column=5, row=0, sticky=E+W, padx=5)
+        ttk.Button(self.buttons, text="Format", takefocus=False, command=self.format, state=DISABLED).grid(column=5, row=0, sticky=E+W, padx=5)
 
         for i in range(6):
             self.buttons.columnconfigure(i, weight=1)
@@ -124,8 +124,10 @@ class AmpyGUI(Tk):
 
         # region Shortcuts
 
-        self.bind("<Control-S>", lambda e: self.disconnect())
-        self.bind("<Control-s>", lambda e: self.disconnect())
+        self.bind("<Control-S>", lambda e: SelectPort(self))
+        self.bind("<Control-s>", lambda e: SelectPort(self))
+        self.bind("<Control-M>", lambda e: PutFiles(self, mpy=True) if self.connected else None)
+        self.bind("<Control-m>", lambda e: PutFiles(self, mpy=True) if self.connected else None)
 
         # endregion
 
@@ -162,6 +164,7 @@ class AmpyGUI(Tk):
         for button in self.buttons.winfo_children():
             button.config(state=NORMAL)
 
+        self.board_bar.entryconfig(0, state=NORMAL)
         self.board_bar.entryconfig(1, label="Disconnect", command=self.disconnect)
 
         # Shortcuts
@@ -183,6 +186,7 @@ class AmpyGUI(Tk):
         for button in self.buttons.winfo_children():
             button.config(state=DISABLED)
 
+        self.board_bar.entryconfig(0, state=DISABLED)
         self.board_bar.entryconfig(1, label="Connect", command=lambda: SelectPort(self))
 
         # Shortcuts
@@ -320,18 +324,6 @@ class AmpyGUI(Tk):
         loading = Loading(self, title="Downloading")
         threading.Thread(target=get_thread).start()
 
-    def put(self):
-
-        """Upload files or folder."""
-
-        PutFiles(self)
-
-    def mk_dir(self):
-
-        """Make a directory on the board."""
-
-        MkDir(self)
-
     def remove(self):
 
         """Remove selected file or folder."""
@@ -350,6 +342,7 @@ class AmpyGUI(Tk):
         del self.real_paths[item]
 
         self.tree_view.delete(self.tree_view.focus())
+        self.select_item()
         self.get_space_info()
 
     def reset(self):

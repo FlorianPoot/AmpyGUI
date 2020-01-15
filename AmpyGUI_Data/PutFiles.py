@@ -1,22 +1,27 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
+from distutils import dir_util
 
 from AmpyGUI_Data.Loading import Loading
 
 import os
 import ampy.pyboard
 import threading
+import shutil
+import mpy_cross
 
 
 class PutFiles(Toplevel):
 
-    def __init__(self, parent):
+    def __init__(self, parent, mpy=False):
 
         super(PutFiles, self).__init__()
 
         self.parent = parent
         self.transient(self.parent)
+
+        self.mpy = mpy
 
         width = 200
         height = 100
@@ -27,7 +32,7 @@ class PutFiles(Toplevel):
         self.geometry(f"{width}x{height}+{pos_x}+{pos_y}")
 
         self.resizable(False, False)
-        self.title("Put...")
+        self.title("Put..." if not self.mpy else "Put MPY...")
 
         if sys.platform == "win32":
             self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
@@ -41,14 +46,34 @@ class PutFiles(Toplevel):
         self.focus_set()
         self.grab_set()
 
+    @staticmethod
+    def convert_to_mpy():
+        for root, dirs, files in os.walk("MPY"):
+            root = root.replace("\\", "/")
+            for file in files:
+                if ".py" == file[-3:] and file != "main.py":
+                    py_path = root + "/" + file
+                    mpy_cross.run(py_path).wait()
+                    os.remove(py_path)
+
     def folder(self):
 
         def folder_thread():
             try:
-                directories = list()
-                for root, dirs, files in os.walk(folder):
+                if self.mpy:
+                    # Compile python files to mpy.
+                    if os.path.exists("MPY"):
+                        shutil.rmtree("MPY")
 
-                    relative_path = root.replace(folder, "").replace("\\", "/")
+                    dir_util._path_created = {}
+                    dir_util.copy_tree(folder, "MPY")
+
+                    self.convert_to_mpy()
+
+                directories = list()
+                for root, dirs, files in os.walk(folder if not self.mpy else "MPY"):
+
+                    relative_path = root.replace(folder if not self.mpy else "MPY", "").replace("\\", "/")
 
                     # Directories with '.' are ignored.
                     if "." in relative_path:
@@ -61,6 +86,9 @@ class PutFiles(Toplevel):
                     for file in files:
                         with open(root + "/" + file, "rb") as data:
                             self.parent.files.put(path[:-1] + relative_path + "/" + file, data.read())
+
+                if self.mpy:
+                    shutil.rmtree("MPY")
 
                 self.parent.refresh()
                 loading.close()
@@ -80,9 +108,27 @@ class PutFiles(Toplevel):
 
         def files_thread():
             try:
-                for file in files:
-                    with open(file.name, "rb") as data:
-                        self.parent.files.put(path + file.name.split("/")[-1], data.read())
+                if self.mpy:
+                    # Compile python files to mpy.
+                    if os.path.exists("MPY"):
+                        shutil.rmtree("MPY")
+
+                    os.mkdir("MPY")
+
+                    for file in files:
+                        shutil.copy2(file.name, "MPY/" + file.name.split("/")[-1])
+                    self.convert_to_mpy()
+
+                    for file in os.listdir("MPY"):
+                        with open("MPY/" + file, "rb") as data:
+                            self.parent.files.put(path + file, data.read())
+                else:
+                    for file in files:
+                        with open(file.name, "rb") as data:
+                            self.parent.files.put(path + file.name.split("/")[-1], data.read())
+
+                if self.mpy:
+                    shutil.rmtree("MPY")
 
                 self.parent.refresh()
                 loading.close()
