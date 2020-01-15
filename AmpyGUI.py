@@ -5,6 +5,7 @@ from tkinter import filedialog
 from ampy.pyboard import Pyboard
 from ampy.files import Files
 
+from AmpyGUI_Data.About import About
 from AmpyGUI_Data.PutFiles import PutFiles
 from AmpyGUI_Data.SelectPort import SelectPort
 from AmpyGUI_Data.Loading import Loading
@@ -26,7 +27,7 @@ class AmpyGUI(Tk):
         super(AmpyGUI, self).__init__()
 
         # region GUI.
-        self.title("AmpyGUI - Version 1.1.0 Alpha")
+        self.title("AmpyGUI - Version 1.1.0 Beta")
         self.geometry("650x250")
         self.minsize(650, 250)
 
@@ -47,7 +48,7 @@ class AmpyGUI(Tk):
 
         help_bar = Menu(menu_bar, tearoff=0)
         help_bar.add_command(label="GitHub page", command=lambda: webbrowser.open("https://github.com/FlorianPoot/AmpyGUI"))
-        help_bar.add_command(label="About", command=None)
+        help_bar.add_command(label="About", command=lambda: About(self))
 
         menu_bar.add_cascade(label="Board", menu=self.board_bar)
         menu_bar.add_cascade(label="Help", menu=help_bar)
