@@ -23,12 +23,12 @@ class About(Toplevel):
         self.title("About")
 
         if sys.platform == "win32":
-            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+            self.iconbitmap("data/AmpyGUI_icon.ico")
         elif sys.platform == "linux":
-            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
             self.tk.call("wm", "iconphoto", self._w, self.icon)
 
-        Label(self, text="AmpyGUI - Version 1.1.0 Beta").pack(pady=5)
+        Label(self, text="AmpyGUI - Version 1.1.0").pack(pady=5)
 
         labelframe_text_bind = ttk.Label(self, text="Dependencies")
         label_frame_bind = ttk.LabelFrame(self, labelwidget=labelframe_text_bind)

@@ -3,7 +3,7 @@ from tkinter import ttk
 from tkinter import filedialog
 from distutils import dir_util
 
-from AmpyGUI_Data.Loading import Loading
+from data.loading import Loading
 
 import os
 import ampy.pyboard
@@ -35,9 +35,9 @@ class PutFiles(Toplevel):
         self.title("Put..." if not self.mpy else "Put MPY...")
 
         if sys.platform == "win32":
-            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+            self.iconbitmap("data/AmpyGUI_icon.ico")
         elif sys.platform == "linux":
-            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
             self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         ttk.Button(self, text="Put folder", takefocus=0, command=self.folder).pack(expand=YES, fill=BOTH, padx=5, pady=4)

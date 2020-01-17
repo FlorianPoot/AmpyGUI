@@ -5,11 +5,11 @@ from tkinter import filedialog
 from ampy.pyboard import Pyboard
 from ampy.files import Files
 
-from AmpyGUI_Data.About import About
-from AmpyGUI_Data.PutFiles import PutFiles
-from AmpyGUI_Data.SelectPort import SelectPort
-from AmpyGUI_Data.Loading import Loading
-from AmpyGUI_Data.MkDir import MkDir
+from data.about import About
+from data.put_files import PutFiles
+from data.select_port import SelectPort
+from data.loading import Loading
+from data.mk_dir import MkDir
 
 import threading
 import webbrowser
@@ -27,14 +27,14 @@ class AmpyGUI(Tk):
         super(AmpyGUI, self).__init__()
 
         # region GUI.
-        self.title("AmpyGUI - Version 1.1.0 Beta")
+        self.title("AmpyGUI - Version 1.1.0")
         self.geometry("650x250")
         self.minsize(650, 250)
 
         if sys.platform == "win32":
-            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+            self.iconbitmap("data/AmpyGUI_icon.ico")
         elif sys.platform == "linux":
-            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
             self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         menu_bar = Menu(self)
@@ -295,7 +295,7 @@ class AmpyGUI(Tk):
         """Clear treeview, Listdir and get space info."""
 
         # Start timer
-        timer = threading.Timer(5, self.time_out)
+        timer = threading.Timer(10, self.time_out)
         timer.start()
 
         self.clear()

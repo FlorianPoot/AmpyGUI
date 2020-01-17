@@ -1,6 +1,6 @@
 from tkinter import *
 
-from AmpyGUI_Data.AnimatedGif import AnimatedGif
+from data.animated_gif import AnimatedGif
 
 
 class Loading(Toplevel):
@@ -24,9 +24,9 @@ class Loading(Toplevel):
         self.title(title)
 
         if sys.platform == "win32":
-            self.iconbitmap("AmpyGUI_Data/AmpyGUI_icon.ico")
+            self.iconbitmap("data/AmpyGUI_icon.ico")
         elif sys.platform == "linux":
-            self.icon = Image("photo", file="AmpyGUI_Data/AmpyGUI_icon.png")
+            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
             self.tk.call("wm", "iconphoto", self._w, self.icon)
 
         frame = Frame(self)
@@ -36,7 +36,7 @@ class Loading(Toplevel):
         Label(frame, text=title + "...").grid(column=1, row=0)
         frame.pack(expand=YES)
 
-        self.loading.load("AmpyGUI_Data/Loading.gif")
+        self.loading.load("data/Loading.gif")
 
         self.protocol("WM_DELETE_WINDOW", lambda: None)
 
