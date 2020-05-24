@@ -38,10 +38,7 @@ class SelectPort(Toplevel):
         Label(port, text="Select port: ", anchor=W).grid(column=0, row=0, sticky=E, pady=5, padx=5)
 
         self.combo_box = ttk.Combobox(port, state="readonly", takefocus=0, width=10)
-        self.serial_ports()
-
         self.combo_box.bind("<FocusIn>", self.connect_button)
-
         self.combo_box.grid(column=1, row=0, sticky=W)
 
         port.columnconfigure(0, weight=1)
@@ -60,6 +57,9 @@ class SelectPort(Toplevel):
         for i in range(2):
             self.columnconfigure(i, weight=1)
         self.rowconfigure(0, weight=1)
+
+        self.update()
+        self.serial_ports()
 
         if self.parent.port is not None:
             for i, c in enumerate(self.combo_box["values"]):
