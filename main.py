@@ -259,6 +259,7 @@ class AmpyGUI(Tk):
         """Close board and spread an error popup if delay is over."""
 
         self.board.close()
+        self.disconnect()
 
     def get_space_info(self):
 
