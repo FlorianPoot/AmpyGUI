@@ -313,9 +313,10 @@ class AmpyGUI(Tk):
             try:
                 with open(path + "/" + name, "wb") as file:
                     file.write(self.files.get(self.real_paths[item]))
-                loading.close()
             except Exception as e:
                 self.show_error(e)
+
+            loading.close()
 
         name = self.tree_view.item(self.tree_view.focus())["text"]
         item = self.tree_view.focus()
@@ -368,15 +369,16 @@ class AmpyGUI(Tk):
                             else:
                                 self.files.rm(value)
 
+                    self.refresh()
                 except Exception as e:
                     self.show_error(e)
             else:
                 try:
                     self.files.rmdir("/flash")
-                except RuntimeError:
+                    self.refresh()
+                except (Exception, RuntimeError):
                     pass
 
-            self.refresh()
             loading.close()
 
         if not messagebox.askyesno("Format", "Are you sure you want to remove all files except boot.py ?"):

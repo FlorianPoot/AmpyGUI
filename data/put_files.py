@@ -4,6 +4,7 @@ from tkinter import filedialog
 from distutils import dir_util
 
 from data.loading import Loading
+# from data import mpy_cross
 
 import os
 import ampy.pyboard
@@ -91,9 +92,10 @@ class PutFiles(Toplevel):
                     shutil.rmtree("MPY")
 
                 self.parent.refresh()
-                loading.close()
             except (Exception, ampy.pyboard.PyboardError) as e:
                 self.parent.show_error(e)
+
+            loading.close()
 
         path = self.parent.get_path()
 
@@ -131,9 +133,10 @@ class PutFiles(Toplevel):
                     shutil.rmtree("MPY")
 
                 self.parent.refresh()
-                loading.close()
             except (Exception, ampy.pyboard.PyboardError) as e:
                 self.parent.show_error(e)
+
+            loading.close()
 
         path = self.parent.get_path()
 
