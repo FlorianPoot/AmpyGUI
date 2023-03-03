@@ -18,9 +18,6 @@ import ast
 import sys
 
 
-# TODO Test with Raspberry PICO
-
-
 class AmpyGUI(Tk):
 
     def __init__(self):
@@ -367,8 +364,7 @@ class AmpyGUI(Tk):
             if not self.loboris_port:
                 try:
                     for value in self.real_paths.values():
-                        if value != "/boot.py" and "/" not in value[1:]:
-
+                        if value != "/" and value != "/boot.py" and "/" not in value[1:]:
                             # Folders are determined by the lack of extension.
                             if "." not in value:
                                 self.files.rmdir(value)
