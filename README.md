@@ -17,7 +17,7 @@ A graphical interface for Ampy (https://github.com/scientifichackers/ampy)
 
 ## Good to know
 * Binary for Windows are available at https://github.com/FlorianPoot/AmpyGUI/releases.
-* It has only been tested with ESP8266 and ESP32 on MicroPython 1.12.
+* Tested on ESP8266, ESP32 and Raspberry Pi Pico with MicroPython 1.19.1.
 * Folders are determined by the lack of extension.
 
 ## Image
