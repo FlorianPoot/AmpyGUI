@@ -1,0 +1,4 @@
+adafruit-ampy~=1.1.0
+pyserial~=3.5
+Pillow~=9.4.0
+mpy-cross~=1.19.1
