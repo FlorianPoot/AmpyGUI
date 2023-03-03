@@ -7,6 +7,7 @@ from data.loading import Loading
 # from data import mpy_cross
 
 import os
+import sys
 import ampy.pyboard
 import threading
 import shutil
@@ -36,10 +37,7 @@ class PutFiles(Toplevel):
         self.title("Put..." if not self.mpy else "Put MPY...")
 
         if sys.platform == "win32":
-            self.iconbitmap("data/AmpyGUI_icon.ico")
-        elif sys.platform == "linux":
-            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
-            self.tk.call("wm", "iconphoto", self._w, self.icon)
+            self.iconbitmap("data/ampy_icon.ico")
 
         ttk.Button(self, text="Put folder", takefocus=0, command=self.folder).pack(expand=YES, fill=BOTH, padx=5, pady=4)
         ttk.Button(self, text="Put files", takefocus=0, command=self.files).pack(expand=YES, fill=BOTH, padx=5, pady=4)

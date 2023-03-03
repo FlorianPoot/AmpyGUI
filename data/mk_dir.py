@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 
+import sys
+
 
 class MkDir(Toplevel):
 
@@ -24,22 +26,19 @@ class MkDir(Toplevel):
         self.title("MkDir...")
 
         if sys.platform == "win32":
-            self.iconbitmap("data/AmpyGUI_icon.ico")
-        elif sys.platform == "linux":
-            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
-            self.tk.call("wm", "iconphoto", self._w, self.icon)
+            self.iconbitmap("data/ampy_icon.ico")
 
         self.name = StringVar()
 
         entry = ttk.Entry(self, textvariable=self.name, font="Arial 12", width=25)
         entry.pack(expand=YES, fill=BOTH, side="left", padx=5, pady=10)
 
-        entry.focus()
-
         ttk.Button(self, text="Ok", takefocus=0, command=self.mk_dir).pack(expand=YES, fill=BOTH, side="right", padx=5, pady=10)
 
         self.focus_set()
         self.grab_set()
+
+        entry.focus()
 
     def mk_dir(self):
 

@@ -28,10 +28,7 @@ class SelectPort(Toplevel):
         self.title("Board")
 
         if sys.platform == "win32":
-            self.iconbitmap("data/AmpyGUI_icon.ico")
-        elif sys.platform == "linux":
-            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
-            self.tk.call("wm", "iconphoto", self._w, self.icon)
+            self.iconbitmap("data/ampy_icon.ico")
 
         # region Port
         port = Frame(self, bd=1, relief=GROOVE)

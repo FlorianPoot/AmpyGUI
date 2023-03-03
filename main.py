@@ -15,6 +15,10 @@ import threading
 import webbrowser
 import textwrap
 import ast
+import sys
+
+
+# TODO Test with Raspberry PICO
 
 
 class AmpyGUI(Tk):
@@ -27,16 +31,15 @@ class AmpyGUI(Tk):
         super(AmpyGUI, self).__init__()
 
         # region GUI.
-        self.title("AmpyGUI - Version 1.1.0")
+        self.title("AmpyGUI - Version 1.1.4")
         self.geometry("650x250")
         self.minsize(650, 250)
 
         if sys.platform == "win32":
-            self.iconbitmap("data/AmpyGUI_icon.ico")
-        elif sys.platform == "linux":
-            self.icon = Image("photo", file="data/AmpyGUI_icon.png")
-            self.tk.call("wm", "iconphoto", self._w, self.icon)
+            self.iconbitmap("data/ampy_icon.ico")
+        # endregion
 
+        # region Menu Bar
         menu_bar = Menu(self)
 
         self.board_bar = Menu(menu_bar, tearoff=0)
@@ -53,7 +56,9 @@ class AmpyGUI(Tk):
         menu_bar.add_cascade(label="Board", menu=self.board_bar)
         menu_bar.add_cascade(label="Help", menu=help_bar)
         self.config(menu=menu_bar)
+        # endregion
 
+        # region Treeview
         self.tree_view = ttk.Treeview(self, selectmode=BROWSE)
 
         vsb = ttk.Scrollbar(self, orient="vertical", command=self.tree_view.yview)
@@ -72,9 +77,9 @@ class AmpyGUI(Tk):
 
         self.tree_view.grid(column=0, row=0, sticky=N+S+E+W)
         self.tree_view.bind("<ButtonRelease-1>", self.select_item)
+        # endregion
 
-        ttk.Separator(orient=HORIZONTAL).grid(column=0, row=1, columnspan=2, sticky=N+S+E+W)
-
+        # region Memory
         memory = Frame(self, bd=1, relief=GROOVE)
 
         self.total_label = Label(memory, text="Total: N/A MB")
@@ -87,7 +92,9 @@ class AmpyGUI(Tk):
         self.used_label.pack(expand=YES, fill=BOTH, side="left", padx=10)
 
         memory.grid(column=0, row=2, columnspan=2, pady=5)
+        # endregion
 
+        # region Buttons
         self.buttons = Frame(self)
 
         self.get_button = ttk.Button(self.buttons, text="Get", takefocus=False, command=self.get, state=DISABLED)
@@ -124,12 +131,10 @@ class AmpyGUI(Tk):
         # endregion
 
         # region Shortcuts
-
         self.bind("<Control-S>", lambda e: SelectPort(self))
         self.bind("<Control-s>", lambda e: SelectPort(self))
         self.bind("<Control-M>", lambda e: PutFiles(self, mpy=True) if self.connected else None)
         self.bind("<Control-m>", lambda e: PutFiles(self, mpy=True) if self.connected else None)
-
         # endregion
 
         self.update()
@@ -140,7 +145,7 @@ class AmpyGUI(Tk):
 
         self.mainloop()
 
-    def select_item(self, event=None):
+    def select_item(self, _event=None):
 
         """Enable buttons if an item is selected in tree view."""
 
@@ -401,7 +406,7 @@ class AmpyGUI(Tk):
 
     @staticmethod
     def show_error(*args):
-        messagebox.showerror("Exception", args)
+        messagebox.showerror("Exception", str(args))
 
 
 if __name__ == "__main__":
