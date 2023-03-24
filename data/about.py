@@ -27,7 +27,7 @@ class About(Toplevel):
         if sys.platform == "win32":
             self.iconbitmap("data/ampy_icon.ico")
 
-        Label(self, text="AmpyGUI - Version 1.1.4").pack(pady=5)
+        Label(self, text=f"AmpyGUI - Version {self.parent.version}").pack(pady=5)
 
         labelframe_text_bind = ttk.Label(self, text="Requirements")
         label_frame_bind = ttk.LabelFrame(self, labelwidget=labelframe_text_bind)

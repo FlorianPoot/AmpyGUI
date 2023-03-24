@@ -52,8 +52,12 @@ class MkDir(Toplevel):
             else:
                 path = self.parent.get_path() + self.name.get()
 
+            self.parent.repl.stop_repl()  # Stop REPL to prevent serial conflict.
+
             self.parent.files.mkdir(path)
             self.parent.refresh()
+
+            self.parent.repl.start_repl()
             self.destroy()
         else:
             messagebox.showerror("Error", f"You did not enter a directory name or you enter an invalid characters ({invalid_characters}).")

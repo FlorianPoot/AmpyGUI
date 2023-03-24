@@ -94,11 +94,13 @@ class PutFiles(Toplevel):
                 self.parent.show_error(e)
 
             loading.close()
+            self.parent.repl.start_repl()
 
         path = self.parent.get_path()
 
         folder = filedialog.askdirectory()
         if folder != "":
+            self.parent.repl.stop_repl()  # Stop REPL to prevent serial conflict.
             loading = Loading(self.parent, title="Uploading")
             threading.Thread(target=folder_thread).start()
 
@@ -135,11 +137,13 @@ class PutFiles(Toplevel):
                 self.parent.show_error(e)
 
             loading.close()
+            self.parent.repl.start_repl()
 
         path = self.parent.get_path()
 
         files = filedialog.askopenfiles()
         if files != "":
+            self.parent.repl.stop_repl()  # Stop REPL to prevent serial conflict.
             loading = Loading(self.parent, title="Uploading")
             threading.Thread(target=files_thread).start()
 

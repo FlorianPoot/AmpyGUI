@@ -10,6 +10,7 @@ from data.put_files import PutFiles
 from data.select_port import SelectPort
 from data.loading import Loading
 from data.mk_dir import MkDir
+from data.repl import REPL
 
 import threading
 import webbrowser
@@ -24,11 +25,13 @@ class AmpyGUI(Tk):
 
         # Report all exceptions to a MessageBox.
         Tk.report_callback_exception = self.show_error
+
+        self.version = "1.2.0"
         
         super(AmpyGUI, self).__init__()
 
         # region GUI.
-        self.title("AmpyGUI - Version 1.1.4")
+        self.title(f"AmpyGUI {self.version}")
         self.geometry("650x250")
         self.minsize(650, 250)
 
@@ -36,12 +39,15 @@ class AmpyGUI(Tk):
             self.iconbitmap("data/ampy_icon.ico")
         # endregion
 
+        self.repl = REPL(self)
+
         # region Menu Bar
         menu_bar = Menu(self)
 
         self.board_bar = Menu(menu_bar, tearoff=0)
         self.board_bar.add_command(label="Put MPY", command=lambda: PutFiles(self, mpy=True), state=DISABLED, accelerator="   Ctrl+M")
         self.board_bar.add_command(label="Connect", command=lambda: SelectPort(self), accelerator="   Ctrl+S")
+        self.board_bar.add_command(label="REPL", command=self.repl.show, state=DISABLED)
         self.board_bar.add_command(label="WebREPL", command=lambda: webbrowser.open("http://micropython.org/webrepl/"))
         self.board_bar.add_separator()
         self.board_bar.add_command(label="Close", command=self.quit, accelerator="   Alt+F4")
@@ -169,6 +175,7 @@ class AmpyGUI(Tk):
 
         self.board_bar.entryconfig(0, state=NORMAL)
         self.board_bar.entryconfig(1, label="Disconnect", command=self.disconnect)
+        self.board_bar.entryconfig(2, state=NORMAL)
 
         # Shortcuts
         self.bind("<Control-S>", lambda e: self.disconnect())
@@ -191,11 +198,13 @@ class AmpyGUI(Tk):
 
         self.board_bar.entryconfig(0, state=DISABLED)
         self.board_bar.entryconfig(1, label="Connect", command=lambda: SelectPort(self))
+        self.board_bar.entryconfig(2, state=DISABLED)
 
         # Shortcuts
         self.bind("<Control-S>", lambda e: SelectPort(self))
         self.bind("<Control-s>", lambda e: SelectPort(self))
 
+        self.repl.hide()
         self.board.close()
 
         self.connected = False
@@ -320,11 +329,14 @@ class AmpyGUI(Tk):
                 self.show_error(e)
 
             loading.close()
+            self.repl.start_repl()
 
         name = self.tree_view.item(self.tree_view.focus())["text"]
         item = self.tree_view.focus()
 
         path = filedialog.askdirectory()
+
+        self.repl.stop_repl()  # Stop REPL to prevent serial conflict.
 
         loading = Loading(self, title="Downloading")
         threading.Thread(target=get_thread).start()
@@ -338,6 +350,8 @@ class AmpyGUI(Tk):
 
         item = self.tree_view.focus()
 
+        self.repl.stop_repl()  # Stop REPL to prevent serial conflict.
+
         # Folders are determined by the lack of extension.
         if "." not in self.real_paths[item]:
             self.files.rmdir(self.real_paths[item])
@@ -349,6 +363,8 @@ class AmpyGUI(Tk):
         self.tree_view.delete(self.tree_view.focus())
         self.select_item()
         self.get_space_info()
+
+        self.repl.start_repl()
 
     def reset(self):
 
@@ -382,9 +398,12 @@ class AmpyGUI(Tk):
                     pass
 
             loading.close()
+            self.repl.start_repl()
 
         if not messagebox.askyesno("Format", "Are you sure you want to remove all files except boot.py ?"):
             return
+
+        self.repl.stop_repl()  # Stop REPL to prevent serial conflict.
 
         loading = Loading(self, title="Formatting")
         threading.Thread(target=format_thread).start()

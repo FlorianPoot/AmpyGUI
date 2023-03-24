@@ -10,6 +10,7 @@ A graphical interface for Ampy (https://github.com/scientifichackers/ampy)
 * Remove files or folder.
 * Format (remove all files except boot.py).
 * Get total, free and used space.
+* REPL prompt.
 
 ## Requirements
 * You need at least Python 3.6 or later.
